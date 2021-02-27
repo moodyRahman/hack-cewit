@@ -19,15 +19,15 @@ def final_api():
     # location = indata["location"]
     all_reviews = []
     out = {
-        "positive":[],
-        "negative":[],
-        "neutral":[]
+        "positive":defaultdict(lambda: 1),
+        "negative":defaultdict(lambda: 1),
+        "neutral":defaultdict(lambda: 1)
     }
     headers = {"Authorization":environ["YELP_KEY"]}
     res = r.get("https://api.yelp.com/v3/businesses/search?categories=chinese&location=nyc", headers=headers)
     
     review_url = "https://api.yelp.com/v3/businesses/{}/reviews"
-    for business in json.loads(res.content)["businesses"][:3]:
+    for business in json.loads(res.content)["businesses"]:
         review_res = r.get(review_url.format(business["id"]), headers=headers)
         for review in json.loads(review_res.content)["reviews"]:
             document = {"content": review["text"], "type_": language_v1.Document.Type.PLAIN_TEXT, "language": "en"}
@@ -37,13 +37,13 @@ def final_api():
             print(sentimental_score)
             if (sentimental_score > 0.2):
                 for e in res_entities.entities:
-                    out["positive"].append(e.name)
+                    out["positive"][e.name]+=1
             elif (sentimental_score < -0.2):
                 for e in res_entities.entities:
-                    out["negative"].append(e.name)
+                    out["negative"][e.name]+=1
             else:
                 for e in res_entities.entities:
-                    out["neutral"].append(e.name)
+                    out["neutral"][e.name]+=1
             # print(res_sentiment.document_sentiment.magnitude)
             # print(review)
             # print(res_sentiment)
