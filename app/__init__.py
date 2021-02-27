@@ -2,6 +2,8 @@ from google.cloud import language_v1
 from flask import *
 import requests as r
 from requests.api import head
+from os import environ
+from collections import defaultdict
 
 app = Flask(__name__)
 client = language_v1.LanguageServiceClient()
@@ -18,9 +20,10 @@ def final_api():
     all_reviews = []
     out = {
         "positive":[],
-        "neegative":[]
+        "negative":[],
+        "neutral":[]
     }
-    headers = {"Authorization":"Bearer "}
+    headers = {"Authorization":environ["YELP_KEY"]}
     res = r.get("https://api.yelp.com/v3/businesses/search?categories=chinese&location=nyc", headers=headers)
     
     review_url = "https://api.yelp.com/v3/businesses/{}/reviews"
@@ -28,23 +31,27 @@ def final_api():
         review_res = r.get(review_url.format(business["id"]), headers=headers)
         for review in json.loads(review_res.content)["reviews"]:
             document = {"content": review["text"], "type_": language_v1.Document.Type.PLAIN_TEXT, "language": "en"}
-            entities = client.analyze_entities(request={'document': document})
-            sentiment = client.analyze_sentiment(request={'document': document})
-            sentimental_score = sentiment.document_sentiment.score
+            res_entities = client.analyze_entities(request={'document': document})
+            res_sentiment = client.analyze_sentiment(request={'document': document})
+            sentimental_score = res_sentiment.document_sentiment.score
+            print(sentimental_score)
             if (sentimental_score > 0.2):
-                pass
-            if (sentimental_score < -0.2):
-                pass
-            print(sentiment.document_sentiment.magnitude)
-            print(review)
-            print(sentiment)
-            print("========")
-            print(entities)
-            print("\n\n")
+                for e in res_entities.entities:
+                    out["positive"].append(e.name)
+            elif (sentimental_score < -0.2):
+                for e in res_entities.entities:
+                    out["negative"].append(e.name)
+            else:
+                for e in res_entities.entities:
+                    out["neutral"].append(e.name)
+            # print(res_sentiment.document_sentiment.magnitude)
+            # print(review)
+            # print(res_sentiment)
+            # print("========")
+            # print(res_entities)
+            # print("\n\n")
 
-    model_id = 'ex_YCya9nrn'
-    # result = ml.extractors.extract(model_id, all_reviews[:55])
-    return json.loads(res.content)
+    return out
 
 
 
