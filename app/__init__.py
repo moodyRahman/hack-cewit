@@ -2,7 +2,6 @@ from google.cloud import language_v1
 from flask import *
 import requests as r
 from requests.api import head
-from monkeylearn import MonkeyLearn
 
 app = Flask(__name__)
 client = language_v1.LanguageServiceClient()
@@ -21,7 +20,7 @@ def final_api():
         "positive":[],
         "neegative":[]
     }
-    headers = {"Authorization":"Bearer -8D2oNF2Nc0IFt_blYrPMpD96i-HIcOuDb76xLRklBR9IfvSef-Uio28lVpuIicfB3pxoWpdli3bNvOUsGsxNHGz5IB7NpH5vfe4eGgTLVO_roc7WWjlh29JYLY6YHYx"}
+    headers = {"Authorization":"Bearer "}
     res = r.get("https://api.yelp.com/v3/businesses/search?categories=chinese&location=nyc", headers=headers)
     
     review_url = "https://api.yelp.com/v3/businesses/{}/reviews"
