@@ -1,30 +1,38 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 import "tabler-react/dist/Tabler.css";
 import "./App.css";
-import { 
-  Card, 
-  colors, 
-  Grid, 
-  Page, 
-  ProgressCard, 
-  Table 
-} from 'tabler-react';
+import { Card, colors, Grid, Page, ProgressCard, Table } from "tabler-react";
 import Chart, {
   CommonSeriesSettings,
   ValueAxis,
   Label,
   Legend,
   Series,
-  Tooltip
-} from 'devextreme-react/chart';
+  Tooltip,
+} from "devextreme-react/chart";
 // import C3Chart from "react-c3js";
-import { dataSource } from './data.js';
+import { dataSource } from "./data.js";
 
 export default function App() {
-  
+
+  const [data, setData] = useState();
+
   useEffect(() => {
-    
-  })
+    fetch("https://hackathon-nlp-306115.uc.r.appspot.com/metaapi", {
+      method: "POST", // or 'PUT'
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        category:"mexican",
+        location:"nyc"
+      }),
+    })
+    .then(response=> response.json)
+    .then(res => setData(res));
+
+    console.log(data)
+  });
 
   function customizeTooltip(e) {
     return { text: Math.abs(e.valueText) };
@@ -37,7 +45,9 @@ export default function App() {
   return (
     <Page.Main>
       <Page.Header>
-        <Page.Title>Metasort: Business for the Modern Age Made Smarter</Page.Title>
+        <Page.Title>
+          Metasort: Business for the Modern Age Made Smarter
+        </Page.Title>
       </Page.Header>
       <Page.Content>
         <Grid.Row>
@@ -71,7 +81,7 @@ export default function App() {
             <Card>
               <Card.Header>
                 <Card.Title>Keyword Trends Over Time</Card.Title>
-              </Card.Header> 
+              </Card.Header>
               <Chart
                 title="Population Pyramid For Norway 2016"
                 dataSource={dataSource}
@@ -79,24 +89,10 @@ export default function App() {
                 rotated={true}
                 barGroupWidth={18}
               >
-                <CommonSeriesSettings
-                  type="stackedbar"
-                  argumentField="age"
-                />
-                <Series
-                  valueField="male"
-                  name="Male"
-                  color="#3F7FBF"
-                />
-                <Series
-                  valueField="female"
-                  name="Female"
-                  color="#F87CCC"
-                />
-                <Tooltip
-                  enabled={true}
-                  customizeTooltip={customizeTooltip}
-                />
+                <CommonSeriesSettings type="stackedbar" argumentField="age" />
+                <Series valueField="male" name="Male" color="#3F7FBF" />
+                <Series valueField="female" name="Female" color="#F87CCC" />
+                <Tooltip enabled={true} customizeTooltip={customizeTooltip} />
                 <ValueAxis>
                   <Label customizeText={customizeLabel} />
                 </ValueAxis>
@@ -105,7 +101,6 @@ export default function App() {
                   horizontalAlignment="center"
                   margin={{ left: 50 }}
                 />
-
               </Chart>
             </Card>
           </Grid.Col>
@@ -113,6 +108,4 @@ export default function App() {
       </Page.Content>
     </Page.Main>
   );
-
-
 }
