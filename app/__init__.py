@@ -22,19 +22,19 @@ def help():
 
 @app.route("/metaapi", methods=["POST", "GET"])
 def final_api():
-    # indata = request.get_json()
-    # category = indata["category"]
-    # location = indata["location"]
+    indata = request.get_json()
+    category = indata["category"]
+    location = indata["location"]
     out = {
         "positive":[],
         "negative":[],
         "neutral":[]
     }
     headers = {"Authorization":environ["YELP_KEY"]}
-    res = r.get("https://api.yelp.com/v3/businesses/search?categories=chinese&location=nyc", headers=headers)
+    res = r.get("https://api.yelp.com/v3/businesses/search?categories={0}&location={1}".format(category, location), headers=headers)
     
     review_url = "https://api.yelp.com/v3/businesses/{}/reviews"
-    for business in json.loads(res.content)["businesses"][:3]:
+    for business in json.loads(res.content)["businesses"]:
         review_res = r.get(review_url.format(business["id"]), headers=headers)
         for review in json.loads(review_res.content)["reviews"]:
             document = {"content": review["text"], "type_": language_v1.Document.Type.PLAIN_TEXT, "language": "en"}
