@@ -1,11 +1,13 @@
 from google.cloud import language_v1
 from flask import *
+from flask_cors import CORS
 import requests as r
 from requests.api import head
 from os import environ
 from collections import defaultdict
 
 app = Flask(__name__)
+CORS(app)
 client = language_v1.LanguageServiceClient()
 
 @app.route("/")
