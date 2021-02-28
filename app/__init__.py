@@ -27,35 +27,47 @@ def final_api():
         "negative":defaultdict(lambda: 1),
         "neutral":defaultdict(lambda: 1)
     }
+
+    nout = []
     headers = {"Authorization":environ["YELP_KEY"]}
     res = r.get("https://api.yelp.com/v3/businesses/search?categories=chinese&location=nyc", headers=headers)
     
     review_url = "https://api.yelp.com/v3/businesses/{}/reviews"
-    for business in json.loads(res.content)["businesses"]:
+    for business in json.loads(res.content)["businesses"][:3]:
         review_res = r.get(review_url.format(business["id"]), headers=headers)
         for review in json.loads(review_res.content)["reviews"]:
             document = {"content": review["text"], "type_": language_v1.Document.Type.PLAIN_TEXT, "language": "en"}
-            res_entities = client.analyze_entities(request={'document': document})
+            res_entities = client.analyze_entity_sentiment(request={'document': document})
             res_sentiment = client.analyze_sentiment(request={'document': document})
             sentimental_score = res_sentiment.document_sentiment.score
             print(sentimental_score)
             if (sentimental_score > 0.2):
                 for e in res_entities.entities:
                     out["positive"][e.name]+=1
+                    nout.append({
+                        "name":e.name,
+                        "sentiment":"positive",
+                        "magnitude":e.sentiment.score})
             elif (sentimental_score < -0.2):
                 for e in res_entities.entities:
                     out["negative"][e.name]+=1
+                    nout.append({
+                        "sentiment":"negative",
+                        "magnitude":e.sentiment.score})
             else:
                 for e in res_entities.entities:
                     out["neutral"][e.name]+=1
+                    nout.append({
+                        "sentiment":"neutral",
+                        "magnitude":e.sentiment.score})
             # print(res_sentiment.document_sentiment.magnitude)
-            # print(review)
-            # print(res_sentiment)
-            # print("========")
-            # print(res_entities)
-            # print("\n\n")
+            print(review)
+            print(res_sentiment)
+            print("========")
+            print(res_entities)
+            print("\n\n")
 
-    return out
+    return json.dumps(nout)
 
 
 

@@ -15,12 +15,12 @@ import { dataSource } from "./data.js";
 
 export default function App() {
 
-  const [data, setData] = useState();
+  const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     console.log("about to fetch")
-    fetch("https://hackathon-nlp-306115.uc.r.appspot.com/metaapi", {
+    fetch("http://localhost:5000/metaapi", {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
@@ -57,9 +57,11 @@ export default function App() {
       </>
     )
   }
+  else {
 
-  return (
-    <Page.Main>
+    
+    return (
+      <Page.Main>
       <Page.Header>
         <Page.Title>
           Metasort: Business for the Modern Age Made Smarter
@@ -73,7 +75,7 @@ export default function App() {
               content="620"
               progressColor="green"
               progressWidth={60}
-            />
+              />
           </Grid.Col>
           <Grid.Col>
             <ProgressCard
@@ -81,7 +83,7 @@ export default function App() {
               content="310"
               progressColor="yellow"
               progressWidth={30}
-            />
+              />
           </Grid.Col>
           <Grid.Col>
             <ProgressCard
@@ -89,7 +91,7 @@ export default function App() {
               content="200"
               progressColor="red"
               progressWidth={20}
-            />
+              />
           </Grid.Col>
         </Grid.Row>
         <Grid.Row>
@@ -100,23 +102,23 @@ export default function App() {
               </Card.Header>
               <Chart
                 title="Population Pyramid For Norway 2016"
-                dataSource={dataSource}
+                dataSource={data}
                 id="chart"
                 rotated={true}
                 barGroupWidth={18}
-              >
-                <CommonSeriesSettings type="stackedbar" argumentField="age" />
-                <Series valueField="male" name="Male" color="#3F7FBF" />
-                <Series valueField="female" name="Female" color="#F87CCC" />
+                >
+                <CommonSeriesSettings type="stackedbar" argumentField="name" />
+                <Series valueField="magnitude" name="Positive" color="#3F7FBF" />
+                <Series valueField="magnitude" name="Negative" color="#F87CCC" />
                 <Tooltip enabled={true} customizeTooltip={customizeTooltip} />
                 <ValueAxis>
                   <Label customizeText={customizeLabel} />
-                </ValueAxis>
+                </ValueAxis>.negative
                 <Legend
                   verticalAlignment="bottom"
                   horizontalAlignment="center"
                   margin={{ left: 50 }}
-                />
+                  />
               </Chart>
             </Card>
           </Grid.Col>
@@ -124,4 +126,5 @@ export default function App() {
       </Page.Content>
     </Page.Main>
   );
+}
 }
