@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "tabler-react/dist/Tabler.css";
 import "./App.css";
-import { Card, colors, Grid, Page, ProgressCard, Table } from "tabler-react";
+import { Card, colors, Grid, Loader, Page, ProgressCard, Table } from "tabler-react";
 import Chart, {
   CommonSeriesSettings,
   ValueAxis,
@@ -10,6 +10,7 @@ import Chart, {
   Series,
   Tooltip,
 } from "devextreme-react/chart";
+import ClockLoader from "react-spinners/ClockLoader";
 // import C3Chart from "react-c3js";
 import { dataSource } from "./data.js";
 
@@ -49,12 +50,20 @@ export default function App() {
     return `${Math.abs(e.value)}%`;
   }
 
+  const LoaderStyles = {
+    height: '100vh',
+    width: '100vw',
+    display: 'flex',
+    justifyContent: 'center', 
+    alignItems: 'center'
+  };
+
   if (loading)
   {
     return (
-      <>
-      DEATH
-      </>
+      <div style={LoaderStyles}>
+        <ClockLoader size={150} />
+      </div>
     )
   }
 
