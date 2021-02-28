@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
 import "tabler-react/dist/Tabler.css";
 import "./App.css";
-import { Card, colors, Grid, Loader, Page, ProgressCard, Table } from "tabler-react";
+import {
+  Card,
+  colors,
+  Grid,
+  Page,
+  ProgressCard,
+  Table,
+  Form,
+  Button,
+} from "tabler-react";
 import Chart, {
   CommonSeriesSettings,
   ValueAxis,
@@ -15,32 +24,34 @@ import ClockLoader from "react-spinners/ClockLoader";
 import { dataSource } from "./data.js";
 
 export default function App() {
-
-  const [data, setData] = useState();
+  const [data, setData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [submitted, setSubmitted] = useState(false);
+  const [location, setLocation] = useState();
+  const [category, setCategory] = useState();
 
   useEffect(() => {
-    console.log("about to fetch")
+    console.log("about to fetch");
     fetch("https://hackathon-nlp-306115.uc.r.appspot.com/metaapi", {
       method: "POST", // or 'PUT'
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        category:"mexican",
-        location:"nyc"
+        category: category,
+        location: location,
       }),
     })
-    .then(response=> response.json())
-    .then(res => {
-      console.log(res);
-      setLoading(false);
-      setData(res);
-    });
+      .then((response) => response.json())
+      .then((res) => {
+        console.log(res);
+        setLoading(false);
+        setData(res);
+      });
 
-    console.log("here")
+    console.log("here");
     console.log(data);
-  }, [] );
+  }, [submitted, data, category, location]);
 
   function customizeTooltip(e) {
     return { text: Math.abs(e.valueText) };
@@ -65,72 +76,181 @@ export default function App() {
         <ClockLoader size={150} />
       </div>
     )
+  } 
+  
+  else if (!submitted){
+    return (
+      <Page.Main>
+        <Page.Header>
+          <Page.Title>
+            Metasort: Business for the Modern Age Made Smarter
+          </Page.Title>
+        </Page.Header>
+        <Page.Content>
+          <Grid.Row>
+            <Grid.Col>
+              <ProgressCard
+                header="Positive Reviews"
+                content="620"
+                progressColor="green"
+                progressWidth={60}
+              />
+            </Grid.Col>
+            <Grid.Col>
+              <ProgressCard
+                header="Neutral Reviews"
+                content="310"
+                progressColor="yellow"
+                progressWidth={30}
+              />
+            </Grid.Col>
+            <Grid.Col>
+              <ProgressCard
+                header="Negative Reviews"
+                content="200"
+                progressColor="red"
+                progressWidth={20}
+              />
+            </Grid.Col>
+          </Grid.Row>
+
+          <Grid.Row>
+            <Form
+              onSubmit={(event) => {
+                event.preventDefault();
+                setSubmitted(true);
+              }}
+            >
+              <Form.Input
+                name="location"
+                label="Location"
+                placeholder="Enter location"
+                onChange = { (e) => {
+                  setCategory(e.target.value)
+                }}
+              />
+              <Form.Input
+                name="category"
+                label="Category"
+                placeholder="Enter category"
+                onChange = { (e) => {
+                  setCategory(e.target.value)
+                }}
+              />
+              <Button type="submit" value="Submit">SUBMIT</Button>
+            </Form>
+          </Grid.Row>
+        </Page.Content>
+      </Page.Main>
+    );
   }
 
+
   return (
-    <Page.Main>
-      <Page.Header>
-        <Page.Title>
-          Metasort: Business for the Modern Age Made Smarter
-        </Page.Title>
-      </Page.Header>
-      <Page.Content>
-        <Grid.Row>
-          <Grid.Col>
-            <ProgressCard
-              header="Positive Reviews"
-              content="620"
-              progressColor="green"
-              progressWidth={60}
-            />
-          </Grid.Col>
-          <Grid.Col>
-            <ProgressCard
-              header="Neutral Reviews"
-              content="310"
-              progressColor="yellow"
-              progressWidth={30}
-            />
-          </Grid.Col>
-          <Grid.Col>
-            <ProgressCard
-              header="Negative Reviews"
-              content="200"
-              progressColor="red"
-              progressWidth={20}
-            />
-          </Grid.Col>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Col>
-            <Card>
-              <Card.Header>
-                <Card.Title>Keyword Trends Over Time</Card.Title>
-              </Card.Header>
-              <Chart
-                title="Population Pyramid For Norway 2016"
-                dataSource={dataSource}
-                id="chart"
-                rotated={true}
-                barGroupWidth={18}
-              >
-                <CommonSeriesSettings type="stackedbar" argumentField="age" />
-                <Series valueField="male" name="Male" color="#3F7FBF" />
-                <Series valueField="female" name="Female" color="#F87CCC" />
-                <Tooltip enabled={true} customizeTooltip={customizeTooltip} />
-                <ValueAxis>
-                  <Label customizeText={customizeLabel} />
-                </ValueAxis>
-                <Legend
-                  verticalAlignment="bottom"
-                  horizontalAlignment="center"
-                  margin={{ left: 50 }}
-                />
-              </Chart>
-            </Card>
-          </Grid.Col>
-        </Grid.Row>
-      </Page.Content>
-    </Page.Main>
-  );
+      <Page.Main>
+        <Page.Header>
+          <Page.Title>
+            Metasort: Business for the Modern Age Made Smarter
+          </Page.Title>
+        </Page.Header>
+        <Page.Content>
+          <Grid.Row>
+            <Grid.Col>
+              <ProgressCard
+                header="Positive Reviews"
+                content="620"
+                progressColor="green"
+                progressWidth={60}
+              />
+            </Grid.Col>
+            <Grid.Col>
+              <ProgressCard
+                header="Neutral Reviews"
+                content="310"
+                progressColor="yellow"
+                progressWidth={30}
+              />
+            </Grid.Col>
+            <Grid.Col>
+              <ProgressCard
+                header="Negative Reviews"
+                content="200"
+                progressColor="red"
+                progressWidth={20}
+              />
+            </Grid.Col>
+          </Grid.Row>
+
+          <Grid.Row>
+            <Form
+              onSubmit={(event) => {
+                event.preventDefault();
+                setSubmitted(true);
+                setLoading(true);
+              }}
+            >
+              <Form.Input
+                name="location"
+                label="Location"
+                placeholder="Enter location"
+                onChange = { (e) => {
+                  setCategory(e.target.value)
+                }}
+              />
+              <Form.Input
+                name="category"
+                label="Category"
+                placeholder="Enter category"
+                onChange = { (e) => {
+                  setCategory(e.target.value)
+                }}
+              />
+              <Button type="submit" value="Submit">SUBMIT</Button>
+            </Form>
+          </Grid.Row>
+
+          <Grid.Row>
+            <Grid.Col>
+              <Card>
+                <Card.Header>
+                  <Card.Title>Keyword Trends Over Time</Card.Title>
+                </Card.Header>
+                <Chart
+                  title="Population Pyramid For Norway 2016"
+                  dataSource={data}
+                  id="chart"
+                  rotated={true}
+                  barGroupWidth={18}
+                >
+                  <CommonSeriesSettings
+                    type="stackedbar"
+                    argumentField="name"
+                  />
+                  <Series
+                    valueField="magnitude"
+                    name="Positive"
+                    color="#3F7FBF"
+                  />
+                  <Series
+                    valueField="magnitude"
+                    name="Negative"
+                    color="#F87CCC"
+                  />
+                  <Tooltip enabled={true} customizeTooltip={customizeTooltip} />
+                  <ValueAxis>
+                    <Label customizeText={customizeLabel} />
+                  </ValueAxis>
+                  .negative
+                  <Legend
+                    verticalAlignment="bottom"
+                    horizontalAlignment="center"
+                    margin={{ left: 50 }}
+                  />
+                </Chart>
+              </Card>
+            </Grid.Col>
+          </Grid.Row>
+        </Page.Content>
+      </Page.Main>
+    );
 }
