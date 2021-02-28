@@ -16,8 +16,10 @@ import { dataSource } from "./data.js";
 export default function App() {
 
   const [data, setData] = useState();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("about to fetch")
     fetch("https://hackathon-nlp-306115.uc.r.appspot.com/metaapi", {
       method: "POST", // or 'PUT'
       headers: {
@@ -28,11 +30,16 @@ export default function App() {
         location:"nyc"
       }),
     })
-    .then(response=> response.json)
-    .then(res => setData(res));
+    .then(response=> response.json())
+    .then(res => {
+      console.log(res);
+      setLoading(false);
+      setData(res);
+    });
 
-    console.log(data)
-  });
+    console.log("here")
+    console.log(data);
+  }, [] );
 
   function customizeTooltip(e) {
     return { text: Math.abs(e.valueText) };
@@ -40,6 +47,15 @@ export default function App() {
 
   function customizeLabel(e) {
     return `${Math.abs(e.value)}%`;
+  }
+
+  if (loading)
+  {
+    return (
+      <>
+      DEATH
+      </>
+    )
   }
 
   return (
