@@ -5,7 +5,9 @@ import requests as r
 from requests.api import head
 from os import environ
 from collections import defaultdict
+from dotenv import load_dotenv
 
+load_dotenv()
 app = Flask(__name__)
 CORS(app)
 client = language_v1.LanguageServiceClient()
